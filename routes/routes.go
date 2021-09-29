@@ -8,8 +8,11 @@ import (
 )
 
 func New(e *echo.Echo) {
-	// Agent login
-	e.POST("agent/login", controller.AgentLogin)
 	eJwt := e.Group("")
 	eJwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
+	// Agent login
+	e.POST("agent/login", controller.AgentLogin)
+	// Customer login
+	e.POST("customer/login", controller.CustomerLogin)
+
 }
