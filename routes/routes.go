@@ -18,4 +18,6 @@ func New(e *echo.Echo) {
 	//customer initiate new channel to chat with agent
 	e.POST("customer/:customer_id/chat/initiate", controller.NewChannel)
 
+	//customer sends message
+	e.POST("customer/:customer_id/chat/send", controller.CustomerAsSender)
 }
