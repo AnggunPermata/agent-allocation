@@ -29,13 +29,12 @@ func AgentLogin(username, password string) (models.Agent, error) {
 func GetOneAgent(c echo.Context) (models.Agent, error) {
 	var agent models.Agent
 	//first check through active agent
-	if err := config.DB.Find(&agent, "agent_status=?", "active").Error; err != nil {
-		//if there's no active agent, get the minimum agent
-		config.DB.Raw("select min(count_active_channel) from agent").Scan(&agent)
+	if err := config.DB.Order("count_active_channel asc").Limit(1).Where("agent_status = ?", "active").Find(&agent).Error; err != nil {
+		if err := config.DB.Order("count_active_channel asc").Limit(1).Find(&agent).Error; err != nil {
+			return agent, err
+		}
 		return agent, nil
 	}
-	//if there exist active agent, allocate the agent to channel
-	config.DB.Raw("select min(count_active_channel) from agent where agent_status = ?", "active").Scan(&agent)
 	return agent, nil
 
 }
