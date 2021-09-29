@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type Customer struct {
-	gorm.Model
+	ID          uint   `json:"id" form:"id" gorm:"AUTO_INCREMENT"`
 	Username    string `json:"username" form:"username"`
 	Password    string `json:"password" form:"password"`
 	Token       string

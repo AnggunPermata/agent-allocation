@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type Agent struct {
-	gorm.Model
+	ID                   uint   `json:"id" form:"id" gorm:"AUTO_INCREMENT"`
 	Username             string `json:"username" form:"username"`
 	Password             string `json:"password" form:"password"`
 	Count_Active_Channel int    //how many channels being served by the agent at the time
