@@ -42,9 +42,9 @@ func ExtractTokenUserId(c echo.Context) (int, string) {
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
 		fmt.Println(claims)
-		agentId := int(claims["userId"].(float64))
+		userId := int(claims["userId"].(float64))
 		role := fmt.Sprintf("%v", claims["role"])
-		return agentId, role
+		return userId, role
 	}
 	return 0, "a"
 }
