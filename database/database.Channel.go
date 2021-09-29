@@ -21,9 +21,9 @@ func GetChannelDataById(channelId int) ([]models.Message, error) {
 	return channelData, nil
 }
 
-func GetOneChannelById(channelId int) (models.Channel, error) {
+func GetOneChannelById(customer_Id int) (models.Channel, error) {
 	var channel models.Channel
-	if err := config.DB.Find(&channel, "id = ?", channelId).Error; err != nil {
+	if err := config.DB.Where("customer_id = ? AND chat_status =?", customer_Id, "active").Find(&channel).Error; err != nil {
 		return channel, err
 	}
 
