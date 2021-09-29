@@ -20,6 +20,9 @@ func AgentLogin(username, password string) (models.Agent, error) {
 	if err != nil {
 		return agent, err
 	}
+	if err := config.DB.Save(agent).Error; err != nil {
+		return agent, err
+	}
 	return agent, nil
 }
 
