@@ -65,6 +65,9 @@ func CustomerLogout(c echo.Context) error {
 		return err
 	}
 	logout, err := database.GetOneCustomerById(customerId)
+	if logout.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
 	logout.Token = ""
 
 	c.Bind(&logout)

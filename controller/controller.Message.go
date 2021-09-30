@@ -22,6 +22,11 @@ func CustomerAsSender(c echo.Context) error {
 		return err
 	}
 
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	data := models.Input_Message{}
 	c.Bind(&data)
 
@@ -85,6 +90,11 @@ func AgentAsSender(c echo.Context) error {
 
 	if err := AuthorizedAgent(int(agentId), c); err != nil {
 		return err
+	}
+
+	status, err := database.GetOneAgentById(agentId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
 	}
 
 	data := models.Input_Message{}
@@ -154,6 +164,11 @@ func AgentGetAllChannelMessages(c echo.Context) error {
 		return err
 	}
 
+	status, _ := database.GetOneAgentById(int(agentId))
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	check, _ := database.GetOneChannelByAgentAndCustomerId(int(agentId), int(customerId))
 	if check.ID != uint(channelId) {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -200,6 +215,11 @@ func CustomerGetAllChannelMessages(c echo.Context) error {
 
 	if err := AuthorizedCustomer(int(customerId), c); err != nil {
 		return err
+	}
+
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
 	}
 
 	channelId, err2 := strconv.Atoi(c.FormValue("channel_id"))

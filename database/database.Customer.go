@@ -14,7 +14,7 @@ func CustomerLogin(username, password string) (models.Customer, error) {
 		return customer, err
 	}
 
-	customer.Token, err = auth.CreateToken(int(customer.ID))
+	customer.Token, err = auth.CreateCustomerToken(int(customer.ID))
 
 	if err != nil {
 		return customer, err

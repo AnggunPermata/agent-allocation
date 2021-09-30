@@ -12,7 +12,7 @@ func New(e *echo.Echo) {
 	eJwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
 	// Agent login & logout
 	e.POST("/agent/login", controller.AgentLogin)
-	eJwt.PUT("/agent/logout", controller.AgentLogout)
+	eJwt.PUT("/agent/:agent_id/logout", controller.AgentLogout)
 
 	//agent sends message
 	eJwt.POST("/agent/:agent_id/chat/send", controller.AgentAsSender)
@@ -25,7 +25,7 @@ func New(e *echo.Echo) {
 
 	// Customer login & logout
 	e.POST("customer/login", controller.CustomerLogin)
-	eJwt.PUT("customer/logout", controller.CustomerLogout)
+	eJwt.PUT("customer/:customer_id/logout", controller.CustomerLogout)
 
 	//customer initiate new channel to chat with agent
 	eJwt.POST("customer/:customer_id/chat/initiate", controller.NewChannel)

@@ -22,6 +22,11 @@ func NewChannel(c echo.Context) error {
 		return err
 	}
 
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	//check if customer has already initiate a channel and still active
 	statusChat, err := database.GetOneChannelById(customerId)
 	//if channel id > 0 then the channel already exist

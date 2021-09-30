@@ -71,6 +71,11 @@ func AgentResolveChat(c echo.Context) error {
 		return err
 	}
 
+	status, err := database.GetOneAgentById(int(agentId))
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	minusCount, err := database.GetOneAgentById(agentId)
 	minusCount.Count_Active_Channel = minusCount.Count_Active_Channel - 1
 	c.Bind(&minusCount)
@@ -124,6 +129,12 @@ func AgentLogout(c echo.Context) error {
 	if err = AuthorizedAgent(agentId, c); err != nil {
 		return err
 	}
+
+	status, err := database.GetOneAgentById(int(agentId))
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	logout, err := database.GetOneAgentById(agentId)
 	logout.Token = ""
 	logout.Agent_Status = "unactive"
