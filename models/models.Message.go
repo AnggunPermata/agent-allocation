@@ -21,3 +21,9 @@ type Input_Message struct {
 	RecipientID    uint   //agent or customer
 	TextMessage    string `json:"text_message" form:"text_message"`
 }
+
+type Check_All_Message_Input struct {
+	ChannelID  uint `json:"channel_id" form:"channel_id"`
+	AgentID    uint `json:"agent_id" form:"agent_id"`
+	CustomerID uint `json:"customer_id" form:"customer_id"`
+}

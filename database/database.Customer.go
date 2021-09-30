@@ -14,7 +14,7 @@ func CustomerLogin(username, password string) (models.Customer, error) {
 		return customer, err
 	}
 
-	customer.Token, err = auth.CreateToken(int(customer.ID))
+	customer.Token, err = auth.CreateCustomerToken(int(customer.ID))
 
 	if err != nil {
 		return customer, err
@@ -27,8 +27,16 @@ func CustomerLogin(username, password string) (models.Customer, error) {
 
 func GetOneCustomerById(customerId int) (models.Customer, error) {
 	var customer models.Customer
-	if err := config.DB.Find(&customer, "id=?", customerId).Error; err != nil {
+	if err := config.DB.Where("id=?", customerId).First(&customer).Error; err != nil {
 		return customer, err
 	}
+	return customer, nil
+}
+
+func UpdateCustomer(customer models.Customer) (models.Customer, error) {
+	if err := config.DB.Save(&customer).Error; err != nil {
+		return customer, err
+	}
+
 	return customer, nil
 }

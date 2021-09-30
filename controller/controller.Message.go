@@ -18,6 +18,15 @@ func CustomerAsSender(c echo.Context) error {
 		})
 	}
 
+	if err := AuthorizedCustomer(int(customerId), c); err != nil {
+		return err
+	}
+
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	data := models.Input_Message{}
 	c.Bind(&data)
 
@@ -79,6 +88,15 @@ func AgentAsSender(c echo.Context) error {
 		})
 	}
 
+	if err := AuthorizedAgent(int(agentId), c); err != nil {
+		return err
+	}
+
+	status, err := database.GetOneAgentById(agentId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	data := models.Input_Message{}
 	c.Bind(&data)
 
@@ -128,5 +146,119 @@ func AgentAsSender(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Success sending a new message.",
 		"data":    showMessageData,
+	})
+}
+
+//this function used by agent to see the chats from the first time it was
+// initiated by the customer
+func AgentGetAllChannelMessages(c echo.Context) error {
+
+	data := models.Check_All_Message_Input{}
+	c.Bind(&data)
+
+	agentId := data.AgentID
+	customerId := data.CustomerID
+	channelId := data.ChannelID
+
+	if err := AuthorizedAgent(int(agentId), c); err != nil {
+		return err
+	}
+
+	status, _ := database.GetOneAgentById(int(agentId))
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
+	check, _ := database.GetOneChannelByAgentAndCustomerId(int(agentId), int(customerId))
+	if check.ID != uint(channelId) {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "you are not allowed to enter this channel/ channel is not exist",
+		})
+	}
+
+	msg, err4 := database.GetChannelDataById(int(channelId))
+	if err4 != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "cannot find message data",
+		})
+	}
+
+	var allMessage []map[string]interface{}
+	for i := 0; i < len(msg); i++ {
+		mapMsg := map[string]interface{}{
+			"Message ID":                    msg[i].ID,
+			"Channel ID":                    msg[i].ChannelID,
+			"Sender Role / Sender ID":       msg[i].Sender_Role + " / " + strconv.Itoa(int(msg[i].SenderID)),
+			"Recipient Role / Recipient ID": msg[i].Recipient_Role + " / " + strconv.Itoa(int(msg[i].RecipientID)),
+			"Text Message":                  msg[i].TextMessage,
+			"Chat_Status":                   msg[i].Chat_Status,
+			"Arrived at":                    msg[i].CreatedAt,
+		}
+		allMessage = append(allMessage, mapMsg)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    allMessage,
+	})
+}
+
+//this function used by agent to see the chats from the first time it was
+// initiated by the customer
+func CustomerGetAllChannelMessages(c echo.Context) error {
+	customerId, err := strconv.Atoi(c.Param("customer_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "invalid id",
+		})
+	}
+
+	if err := AuthorizedCustomer(int(customerId), c); err != nil {
+		return err
+	}
+
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
+	channelId, err2 := strconv.Atoi(c.FormValue("channel_id"))
+	if err2 != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "invalid channel id",
+		})
+	}
+
+	check, err := database.GetOneChannelById(customerId)
+	if check.ID != uint(channelId) {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "you are not allowed to enter this channel/ channel is not exist",
+		})
+	}
+
+	msg, err4 := database.GetChannelDataById(channelId)
+	if err4 != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "cannot find message data",
+		})
+	}
+
+	var allMessage []map[string]interface{}
+	for i := 0; i < len(msg); i++ {
+		mapMsg := map[string]interface{}{
+			"Message ID":                    msg[i].ID,
+			"Channel ID":                    msg[i].ChannelID,
+			"Sender Role / Sender ID":       msg[i].Sender_Role + " / " + strconv.Itoa(int(msg[i].SenderID)),
+			"Recipient Role / Recipient ID": msg[i].Recipient_Role + " / " + strconv.Itoa(int(msg[i].RecipientID)),
+			"Text Message":                  msg[i].TextMessage,
+			"Chat_Status":                   msg[i].Chat_Status,
+			"Arrived at":                    msg[i].CreatedAt,
+		}
+		allMessage = append(allMessage, mapMsg)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    allMessage,
 	})
 }

@@ -18,6 +18,15 @@ func NewChannel(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Sorry, curtomer id not exist/ you dont have the authorization to access the account")
 	}
 
+	if err := AuthorizedCustomer(int(customerId), c); err != nil {
+		return err
+	}
+
+	status, err := database.GetOneCustomerById(customerId)
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
 	//check if customer has already initiate a channel and still active
 	statusChat, err := database.GetOneChannelById(customerId)
 	//if channel id > 0 then the channel already exist
