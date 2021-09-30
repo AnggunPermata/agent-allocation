@@ -37,7 +37,7 @@ func CustomerAsSender(c echo.Context) error {
 	}
 
 	saveData := models.Message{}
-	saveData.ChannelID = data.ChannelID
+	saveData.ChannelID = channelData.ID
 	saveData.Sender_Role = "customer"
 	saveData.SenderID = uint(customerId)
 	saveData.Recipient_Role = "agent"
@@ -56,8 +56,8 @@ func CustomerAsSender(c echo.Context) error {
 	}
 
 	showMessageData := map[string]interface{}{
-		"TweetID":             send.ID,
-		"UserID":              send.ChannelID,
+		"Message ID":          send.ID,
+		"Channel ID":          send.ChannelID,
 		"Sender Role / ID":    send.Sender_Role + " / " + strconv.Itoa(int(send.SenderID)),
 		"Recipient Role / ID": send.Recipient_Role + " / " + strconv.Itoa(int(send.RecipientID)),
 		"Text Message":        send.TextMessage,
