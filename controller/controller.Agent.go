@@ -12,12 +12,19 @@ import (
 
 //To check user's authorization by using user Id
 
-func AuthorizedAgent(c echo.Context) bool {
-	_, role := auth.ExtractTokenUserId(c)
-	if role != "agent" {
-		return false
+func AuthorizedAgent(agentId int, c echo.Context) error {
+	// _, role := auth.ExtractTokenUserId(c)
+	// if role != "agent" {
+	// 	return false
+	// }
+	// return true
+
+	agent, err := database.GetOneAgentById(agentId)
+	loggedInAgentId, role := auth.ExtractTokenUserId(c)
+	if loggedInAgentId != int(agent.ID) || err != nil || role != "agent" {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Cannot access this account")
 	}
-	return true
+	return nil
 }
 
 func AgentLogin(c echo.Context) error {
@@ -50,6 +57,7 @@ func AgentLogin(c echo.Context) error {
 func AgentResolveChat(c echo.Context) error {
 	//update the messages table.chat_status into "resolved"
 	//update the channels table.chat_status into "resolved"
+	// minus -1 for count_active_channel in agent table
 
 	agentId, err := strconv.Atoi(c.Param("agent_id"))
 	customerId, err := strconv.Atoi(c.FormValue("customer_id"))
@@ -58,6 +66,16 @@ func AgentResolveChat(c echo.Context) error {
 			"message": "please check id again.",
 		})
 	}
+
+	if err := AuthorizedAgent(int(agentId), c); err != nil {
+		return err
+	}
+
+	minusCount, err := database.GetOneAgentById(agentId)
+	minusCount.Count_Active_Channel = minusCount.Count_Active_Channel - 1
+	c.Bind(&minusCount)
+	_, err = database.UpdateAgent(minusCount)
+
 	resolveChannel, err2 := database.GetOneChannelByAgentId(agentId, customerId)
 	if err2 != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -93,5 +111,32 @@ func AgentResolveChat(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"Message": "Success",
 		"Data":    mapData,
+	})
+}
+
+func AgentLogout(c echo.Context) error {
+	agentId, err := strconv.Atoi(c.Param("agent_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "invalid id",
+		})
+	}
+	if err = AuthorizedAgent(agentId, c); err != nil {
+		return err
+	}
+	logout, err := database.GetOneAgentById(agentId)
+	logout.Token = ""
+	logout.Agent_Status = "unactive"
+	c.Bind(&logout)
+	agent, err := database.UpdateAgent(logout)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "cannot logout",
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":  "Make sure to online again at 9 am!",
+		"Agent ID": agent.ID,
+		"Username": agent.Username,
 	})
 }

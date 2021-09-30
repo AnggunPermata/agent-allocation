@@ -18,6 +18,10 @@ func CustomerAsSender(c echo.Context) error {
 		})
 	}
 
+	if err := AuthorizedCustomer(int(customerId), c); err != nil {
+		return err
+	}
+
 	data := models.Input_Message{}
 	c.Bind(&data)
 
@@ -77,6 +81,10 @@ func AgentAsSender(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"message": "invalid id",
 		})
+	}
+
+	if err := AuthorizedAgent(int(agentId), c); err != nil {
+		return err
 	}
 
 	data := models.Input_Message{}
@@ -142,6 +150,10 @@ func AgentGetAllChannelMessages(c echo.Context) error {
 	customerId := data.CustomerID
 	channelId := data.ChannelID
 
+	if err := AuthorizedAgent(int(agentId), c); err != nil {
+		return err
+	}
+
 	check, _ := database.GetOneChannelByAgentAndCustomerId(int(agentId), int(customerId))
 	if check.ID != uint(channelId) {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -185,6 +197,11 @@ func CustomerGetAllChannelMessages(c echo.Context) error {
 			"message": "invalid id",
 		})
 	}
+
+	if err := AuthorizedCustomer(int(customerId), c); err != nil {
+		return err
+	}
+
 	channelId, err2 := strconv.Atoi(c.FormValue("channel_id"))
 	if err2 != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{

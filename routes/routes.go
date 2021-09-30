@@ -10,27 +10,29 @@ import (
 func New(e *echo.Echo) {
 	eJwt := e.Group("")
 	eJwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
-	// Agent login
-	e.POST("agent/login", controller.AgentLogin)
+	// Agent login & logout
+	e.POST("/agent/login", controller.AgentLogin)
+	eJwt.PUT("/agent/logout", controller.AgentLogout)
 
 	//agent sends message
-	e.POST("agent/:agent_id/chat/send", controller.AgentAsSender)
+	eJwt.POST("/agent/:agent_id/chat/send", controller.AgentAsSender)
 
 	//agent see messages
-	e.GET("agent/:agent_id/chat", controller.AgentGetAllChannelMessages)
+	eJwt.GET("agent/:agent_id/chat", controller.AgentGetAllChannelMessages)
 
 	//agent resolved message
-	e.POST("agent/:agent_id/chat/resolve", controller.AgentResolveChat)
+	eJwt.POST("agent/:agent_id/chat/resolve", controller.AgentResolveChat)
 
-	// Customer login
+	// Customer login & logout
 	e.POST("customer/login", controller.CustomerLogin)
+	eJwt.PUT("customer/logout", controller.CustomerLogout)
 
 	//customer initiate new channel to chat with agent
-	e.POST("customer/:customer_id/chat/initiate", controller.NewChannel)
+	eJwt.POST("customer/:customer_id/chat/initiate", controller.NewChannel)
 
 	//customer sends message
-	e.POST("customer/:customer_id/chat/send", controller.CustomerAsSender)
+	eJwt.POST("customer/:customer_id/chat/send", controller.CustomerAsSender)
 
 	//customer see messages
-	e.GET("customer/:customer_id/chat", controller.CustomerGetAllChannelMessages)
+	eJwt.GET("customer/:customer_id/chat", controller.CustomerGetAllChannelMessages)
 }

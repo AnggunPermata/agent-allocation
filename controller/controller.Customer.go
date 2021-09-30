@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/anggunpermata/agent-allocation/auth"
 	"github.com/anggunpermata/agent-allocation/database"
@@ -11,12 +12,19 @@ import (
 
 //To check user's authorization by using user Id
 
-func AuthorizedCustomer(c echo.Context) bool {
-	_, role := auth.ExtractTokenUserId(c)
-	if role != "agent" {
-		return false
+func AuthorizedCustomer(customerId int, c echo.Context) error {
+	// _, role := auth.ExtractTokenUserId(c)
+	// if role != "agent" {
+	// 	return false
+	// }
+	// return true
+
+	customer, err := database.GetOneCustomerById(customerId)
+	loggedInCustomerId, role := auth.ExtractTokenUserId(c)
+	if loggedInCustomerId != int(customer.ID) || err != nil || role != "customer" {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Cannot access this account")
 	}
-	return true
+	return nil
 }
 
 func CustomerLogin(c echo.Context) error {
@@ -43,5 +51,32 @@ func CustomerLogin(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message":   "Hello, Let's Start!",
 		"user-data": showCustomerData,
+	})
+}
+
+func CustomerLogout(c echo.Context) error {
+	customerId, err := strconv.Atoi(c.Param("customer_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "invalid id",
+		})
+	}
+	if err = AuthorizedCustomer(customerId, c); err != nil {
+		return err
+	}
+	logout, err := database.GetOneCustomerById(customerId)
+	logout.Token = ""
+
+	c.Bind(&logout)
+	customer, err := database.UpdateCustomer(logout)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "cannot logout",
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":     "Thank you for using Our service~",
+		"Customer ID": customer.ID,
+		"Username":    customer.Username,
 	})
 }
