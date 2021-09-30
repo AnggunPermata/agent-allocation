@@ -20,6 +20,7 @@ func NewChannel(c echo.Context) error {
 
 	//check if customer has already initiate a channel and still active
 	statusChat, err := database.GetOneChannelById(customerId)
+	//if channel id > 0 then the channel already exist
 	if statusChat.ID > 0 {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"message":              "You have initiated a channel",
