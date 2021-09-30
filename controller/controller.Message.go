@@ -82,7 +82,7 @@ func AgentAsSender(c echo.Context) error {
 	data := models.Input_Message{}
 	c.Bind(&data)
 
-	channelData, _ := database.GetOneChannelByAgentId(agentId)
+	channelData, _ := database.GetOneChannelByAgentId(agentId, int(data.RecipientID))
 
 	if channelData.ID < 1 {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
