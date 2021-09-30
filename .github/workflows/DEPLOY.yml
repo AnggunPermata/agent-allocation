@@ -1,0 +1,26 @@
+name: Deploy to EC2
+on: [push]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to EC2 by using SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          if [ ! -d "/home/ubuntu/agent-allocation" ]
+          then
+            git clone git@github.com:AnggunPermata/agent-allocation.git /home/ubuntu/app
+          fi
+          cd /home/ubuntu/agent-allocation
+          git pull origin deployment
+          docker stop agentAllocation
+          docker rm agentAllocation
+          docker build -t agent-allocation:latest .
+          docker run -d -e "HTTP_PORT=:80" -p 80:80 --name agentAllocation agent-allocation:latest
