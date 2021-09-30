@@ -38,3 +38,11 @@ func GetOneChannelByAgentId(agent_Id, customer_Id int) (models.Channel, error) {
 
 	return channel, nil
 }
+
+func UpdateChannel(channel models.Channel) (models.Channel, error) {
+	if err := config.DB.Save(&channel).Error; err != nil {
+		return channel, err
+	}
+
+	return channel, nil
+}
