@@ -12,6 +12,10 @@ func New(e *echo.Echo) {
 	eJwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
 	// Agent login
 	e.POST("agent/login", controller.AgentLogin)
+
+	//agent sends message
+	e.POST("agent/:agent_id/chat/send", controller.AgentAsSender)
+
 	// Customer login
 	e.POST("customer/login", controller.CustomerLogin)
 
