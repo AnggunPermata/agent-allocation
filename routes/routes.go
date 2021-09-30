@@ -16,6 +16,9 @@ func New(e *echo.Echo) {
 	//agent sends message
 	e.POST("agent/:agent_id/chat/send", controller.AgentAsSender)
 
+	//agent see messages
+	e.GET("agent/:agent_id/chat", controller.AgentGetAllChannelMessages)
+
 	//agent resolved message
 	e.POST("agent/:agent_id/chat/resolve", controller.AgentResolveChat)
 
@@ -27,4 +30,7 @@ func New(e *echo.Echo) {
 
 	//customer sends message
 	e.POST("customer/:customer_id/chat/send", controller.CustomerAsSender)
+
+	//customer see messages
+	e.GET("customer/:customer_id/chat", controller.CustomerGetAllChannelMessages)
 }
