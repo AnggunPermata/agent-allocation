@@ -23,6 +23,9 @@ func New(e *echo.Echo) {
 	//agent resolved message
 	eJwt.POST("agent/:agent_id/chat/resolve", controller.AgentResolveChat)
 
+	//agent see active message
+	eJwt.GET("agent/:agent_id/chat/active", controller.AgentGetAllActiveChannel)
+
 	// Customer login & logout
 	e.POST("customer/login", controller.CustomerLogin)
 	eJwt.PUT("customer/:customer_id/logout", controller.CustomerLogout)

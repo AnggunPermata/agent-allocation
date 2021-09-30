@@ -151,3 +151,44 @@ func AgentLogout(c echo.Context) error {
 		"Username": agent.Username,
 	})
 }
+
+func AgentGetAllActiveChannel(c echo.Context) error {
+	agentId, err := strconv.Atoi(c.Param("agent_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "invalid agent id",
+		})
+	}
+
+	if err = AuthorizedAgent(agentId, c); err != nil {
+		return err
+	}
+
+	status, err := database.GetOneAgentById(int(agentId))
+	if status.Token == "" {
+		return c.JSON(http.StatusBadRequest, "You have to login again")
+	}
+
+	channel, err := database.GetAllChannelByAgentId(agentId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "cannot get active channel",
+		})
+	}
+
+	var allChannel []map[string]interface{}
+	for i := 0; i < len(channel); i++ {
+		mapMsg := map[string]interface{}{
+			"Channel ID":  channel[i].ID,
+			"Customer ID": channel[i].CustomerID,
+			"Agent ID":    channel[i].AgentID,
+			"Chat Status": channel[i].Chat_Status,
+		}
+		allChannel = append(allChannel, mapMsg)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    allChannel,
+	})
+}

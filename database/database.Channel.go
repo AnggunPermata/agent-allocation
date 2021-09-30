@@ -30,6 +30,14 @@ func GetOneChannelById(customer_Id int) (models.Channel, error) {
 	return channel, nil
 }
 
+func GetAllChannelByAgentId(agent_Id int) ([]models.Channel, error) {
+	var channel []models.Channel
+	if err := config.DB.Where("agent_id = ? AND chat_status =?", agent_Id, "active").Find(&channel).Error; err != nil {
+		return channel, err
+	}
+	return channel, nil
+}
+
 func GetOneChannelByAgentId(agent_Id, customer_Id int) (models.Channel, error) {
 	var channel models.Channel
 	if err := config.DB.Where("agent_id = ? AND customer_id = ? AND chat_status =?", agent_Id, customer_Id, "active").Find(&channel).Error; err != nil {
