@@ -16,6 +16,9 @@ func New(e *echo.Echo) {
 	//agent sends message
 	e.POST("agent/:agent_id/chat/send", controller.AgentAsSender)
 
+	//agent resolved message
+	e.POST("agent/:agent_id/chat/resolve", controller.AgentResolveChat)
+
 	// Customer login
 	e.POST("customer/login", controller.CustomerLogin)
 
