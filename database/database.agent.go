@@ -20,6 +20,7 @@ func AgentLogin(username, password string) (models.Agent, error) {
 	if err != nil {
 		return agent, err
 	}
+	agent.Agent_Status = "active"
 	if err := config.DB.Save(agent).Error; err != nil {
 		return agent, err
 	}
@@ -47,5 +48,14 @@ func UpdateAgent(agent models.Agent) (models.Agent, error) {
 		return agent, err
 	}
 
+	return agent, nil
+}
+
+func GetOneAgentById(agentId int) (models.Agent, error) {
+	var err error
+	var agent models.Agent
+	if err = config.DB.Where("id=?", agentId).First(&agent).Error; err != nil {
+		return agent, err
+	}
 	return agent, nil
 }
