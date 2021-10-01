@@ -16,6 +16,6 @@ COPY ./database ./database
 COPY ./models ./models
 COPY ./routes ./routes
 
-RUN go build -o agent-allocation
+RUN go build -o agentAllocation
 
-CMD ./agent-allocation
+CMD ./agentAllocation
