@@ -22,5 +22,5 @@ jobs:
           git pull origin deployment
           docker stop agentAllocation
           docker rm agentAllocation
-          docker build -t agent-allocation:latest .
-          docker run -d -e "HTTP_PORT=:80" -p 80:80 --name agentAllocation agent-allocation:latest
+          docker build -t anggunpermatata/agent-allocation:latest .
+          docker run -d -e "HTTP_PORT=:80" -p 80:80 --name agentAllocation anggunpermatata/agent-allocation:latest
