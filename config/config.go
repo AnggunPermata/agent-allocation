@@ -16,6 +16,7 @@ var PORT int
 
 func InitDB() {
 	connectionString := constant.Configuration["ConnectionString"]
+	fmt.Println("constant.Configuration: ", constant.Configuration)
 	fmt.Println(connectionString)
 	var err error
 	DB, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
