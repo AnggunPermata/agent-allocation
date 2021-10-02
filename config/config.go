@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/anggunpermata/agent-allocation/constant"
@@ -15,6 +16,7 @@ var PORT int
 
 func InitDB() {
 	connectionString := constant.Configuration["ConnectionString"]
+	fmt.Println(connectionString)
 	var err error
 	DB, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
