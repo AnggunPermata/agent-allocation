@@ -19,7 +19,7 @@ func InitDB() {
 	fmt.Println("constant.Configuration: ", constant.Configuration)
 	fmt.Println(connectionString)
 	var err error
-	DB, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open(`"`+connectionString+`"`), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
