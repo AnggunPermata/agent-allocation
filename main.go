@@ -15,5 +15,8 @@ func main() {
 	config.InitPort()
 	auth.LogMiddlewares((e))
 	routes.New(e)
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.PORT)))
+	Port := fmt.Sprintf(":%d", config.PORT)
+	if err := e.Start(Port); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
