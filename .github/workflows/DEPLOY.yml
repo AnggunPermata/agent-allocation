@@ -25,5 +25,5 @@ jobs:
           docker stop qiscusDB
           docker rm qiscusDB
           docker build -t anggunpermatata/agent-allocation:latest .
-          docker run --name qiscusDB -e MYSQL_ROOT_PASSWORD=12345 -e MYSQL_DATABASE=qiscus -p 3307:3306 -d mysql:latest
+          docker run --name qiscusDb -e MYSQL_ROOT_PASSWORD=12345 -e MYSQL_DATABASE=qiscus -p 3307:3306 -d mysql:latest
           docker run -d --name agentAllocation -p 8080:8080 -e "CONNECTION_STRING=root:12345@tcp(18.219.131.123:3307)/qiscus?charset=utf8&parseTime=True&loc=Local" -e "HTTP_PORT=8080" anggunpermatata/agent-allocation:latest
