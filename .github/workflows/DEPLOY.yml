@@ -19,7 +19,7 @@ jobs:
             git clone git@github.com:AnggunPermata/agent-allocation.git /home/ubuntu/agent-allocation
           fi
           cd /home/ubuntu/agent-allocation
-          git pull origin deployment
+          git pull origin main
           docker stop agentAllocation
           docker rm agentAllocation
           docker build -t anggunpermatata/agent-allocation:latest .
