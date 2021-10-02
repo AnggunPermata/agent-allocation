@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/anggunpermata/agent-allocation/constant"
@@ -15,11 +14,11 @@ var DB *gorm.DB
 var PORT int
 
 func InitDB() {
-	connectionString := constant.Configuration["ConnectionString"]
-	fmt.Println("constant.Configuration: ", constant.Configuration)
-	fmt.Println(connectionString)
+	// connectionString := "root:12345@tcp(172.17.0.1:3307)/qiscus?charset=utf8&parseTime=True&loc=Local"
+	// fmt.Println("constant.Configuration: ", constant.Configuration)
+	// fmt.Println(connectionString)
 	var err error
-	DB, err = gorm.Open(mysql.Open(`"`+connectionString+`"`), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open("root:12345@tcp(172.17.0.1:3307)/qiscus?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
