@@ -16,7 +16,7 @@ func main() {
 	auth.LogMiddlewares((e))
 	routes.New(e)
 	Port := fmt.Sprintf(":%d", config.PORT)
-	fmt.Println(Port)
+	fmt.Println("Port : ", Port)
 	if err := e.Start(Port); err != nil {
 		e.Logger.Fatal(err)
 	}
