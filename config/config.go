@@ -18,7 +18,7 @@ func InitDB() {
 	// fmt.Println("constant.Configuration: ", constant.Configuration)
 	// fmt.Println(connectionString)
 	var err error
-	DB, err = gorm.Open(mysql.Open("root:12345@tcp(172.17.0.1:3307)/qiscus?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open("root:12345@tcp(18.219.131.123:3307)/qiscus?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
