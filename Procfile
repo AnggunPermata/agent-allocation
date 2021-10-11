@@ -1,1 +1,1 @@
-web: bin/agent-allocation
+web: agent-allocation
